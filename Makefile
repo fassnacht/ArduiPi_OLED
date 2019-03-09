@@ -31,7 +31,7 @@ else # fallback to raspberry
 endif
 
 # Where you want it installed when you do 'make install'
-PREFIX=/usr/local
+PREFIX=$(SYSROOT_PATH)/usr/local
 
 # Library parameters
 # where to put the lib
@@ -41,8 +41,8 @@ LIB=libArduiPi_OLED
 # shared library name
 LIBNAME=$(LIB).so.1.0
 
-CXX=g++
-CC=gcc
+CXX=$(CROSS_COMPILER_PATH)g++
+CC=$(CROSS_COMPILER_PATH)gcc
 CFLAGS=$(CCFLAGS)
 
 # make all
@@ -51,7 +51,7 @@ all: ArduiPi_OLED install
 
 # Make the library
 ArduiPi_OLED: ArduiPi_OLED.o Adafruit_GFX.o bcm2835.o Wrapper.o
-	$(CXX) -shared -Wl,-soname,$(LIB).so.1 $(CFLAGS) $(LDFLAGS)  -o ${LIBNAME} $^ -li2c
+	$(CXX) -shared -Wl,-soname,$(LIB).so.1 $(CFLAGS) $(LDFLAGS)  -o ${LIBNAME} $^
 
 # Library parts (use -fno-rtti flag to avoid link problem)
 ArduiPi_OLED.o: ArduiPi_OLED.cpp

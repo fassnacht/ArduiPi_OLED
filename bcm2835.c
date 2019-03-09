@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
 
 #include <errno.h>
 #include <sys/mman.h>
@@ -34,6 +33,92 @@
 #include <time.h>
 #include <unistd.h>
 #include "bcm2835.h"
+
+/* INCLUDES FOR INLINE DECLARATIONS */
+#include <linux/types.h>
+#include <sys/ioctl.h>
+#include <stddef.h>
+
+/**
+ * INLINE DECLARATION FOR MORE PORTABILLITY
+ * This is replacing the following include:
+ * #include <linux/i2c-dev.h>
+*/
+#define I2C_SMBUS_BYTE_DATA	    2
+#define I2C_SMBUS_WORD_DATA	    3
+#define I2C_SMBUS_I2C_BLOCK_BROKEN  6
+#define I2C_SMBUS_WRITE	0
+#define I2C_SMBUS	0x0720	/* SMBus transfer */
+#define I2C_SMBUS_BLOCK_MAX	32	/* As specified in SMBus standard */
+#define I2C_SLAVE	0x0703
+
+union i2c_smbus_data {
+	__u8 byte;
+	__u16 word;
+	__u8 block[I2C_SMBUS_BLOCK_MAX + 2]; /* block[0] is used for length */
+	                                            /* and one more for PEC */
+};
+
+
+/* This is the structure as used in the I2C_SMBUS ioctl call */
+struct i2c_smbus_ioctl_data {
+	__u8 read_write;
+	__u8 command;
+	__u32 size;
+	union i2c_smbus_data *data;
+};
+
+static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
+                                     int size, union i2c_smbus_data *data)
+{
+	struct i2c_smbus_ioctl_data args;
+
+	args.read_write = read_write;
+	args.command = command;
+	args.size = size;
+	args.data = data;
+	return ioctl(file,I2C_SMBUS,&args);
+}
+
+static inline __s32 i2c_smbus_write_byte_data(int file, __u8 command,
+                                              __u8 value)
+{
+	union i2c_smbus_data data;
+	data.byte = value;
+	return i2c_smbus_access(file,I2C_SMBUS_WRITE,command,
+	                        I2C_SMBUS_BYTE_DATA, &data);
+}
+
+static inline __s32 i2c_smbus_write_word_data(int file, __u8 command,
+                                              __u16 value)
+{
+	union i2c_smbus_data data;
+	data.word = value;
+	return i2c_smbus_access(file,I2C_SMBUS_WRITE,command,
+	                        I2C_SMBUS_WORD_DATA, &data);
+}
+
+static inline __s32 i2c_smbus_write_i2c_block_data(int file, __u8 command,
+                                                   __u8 length,
+                                                   const __u8 *values)
+{
+	union i2c_smbus_data data;
+	int i;
+	if (length > 32)
+		length = 32;
+	for (i = 1; i <= length; i++)
+		data.block[i] = values[i-1];
+	data.block[0] = length;
+	return i2c_smbus_access(file,I2C_SMBUS_WRITE,command,
+	                        I2C_SMBUS_I2C_BLOCK_BROKEN, &data);
+}
+
+/**
+ * INLINE DECLARATION FOR MORE PORTABILLITY [END]
+*/
+
+
+
 
 // This define enables a little test program (by default a blinking output on pin RPI_GPIO_PIN_11)
 // You can do some safe, non-destructive testing on any platform with:
