@@ -41,8 +41,16 @@ LIB=libArduiPi_OLED
 # shared library name
 LIBNAME=$(LIB).so.1.0
 
-CXX=$(CROSS_COMPILER_PATH)g++
-CC=$(CROSS_COMPILER_PATH)gcc
+CXX=g++
+CC=gcc
+ifneq ($(CROSS_CXX),)
+  CXX=$(CROSS_CXX)
+endif
+ifneq ($(CROSS_CC),)
+  CC=$(CROSS_CC)
+endif
+
+
 CFLAGS=$(CCFLAGS)
 
 # make all

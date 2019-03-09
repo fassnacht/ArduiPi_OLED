@@ -22,13 +22,12 @@ Everything is documented on this dedicated [post][2] my [blog][3]
 Cross compilation
 =================
 
-For corsscompilation under ubuntu set the following two environmentvariables:
+For corsscompilation under ubuntu set the following  environmentvariables:
 
-``` CROSS_COMPILER_PATH ```and ```SYSROOT_PATH```
+``` CROSS_CXX ```, ``` CROSS_CC ``` and ```SYSROOT_PATH```
 
 Example for the raspberry pi toolchain:
 ```
-export CROSS_COMPILER_PATH=/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-
+export CROSS_CXX=/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-g++
 export SYSROOT_PATH=/sysroot
 ```
-The Makefile will append the executable type (gcc or g++) to the cross compilation base path.
