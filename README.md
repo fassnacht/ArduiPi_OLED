@@ -19,3 +19,16 @@ Everything is documented on this dedicated [post][2] my [blog][3]
 [2]: http://hallard.me/adafruit-oled-display-driver-for-pi/
 [3]: https://hallard.me
 
+Cross compilation
+=================
+
+For corsscompilation under ubuntu set the following two environmentvariables:
+
+``` CROSS_COMPILER_PATH ```and ```SYSROOT_PATH```
+
+Example:
+```
+export CROSS_COMPILER_PATH=/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-
+export SYSROOT_PATH=/sysroot
+```
+The MAkefile will append the executable type (gcc or g++) to the cross compilation base path.
