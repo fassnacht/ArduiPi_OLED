@@ -26,9 +26,9 @@ For corsscompilation under ubuntu set the following two environmentvariables:
 
 ``` CROSS_COMPILER_PATH ```and ```SYSROOT_PATH```
 
-Example:
+Example for the raspberry pi toolchain:
 ```
 export CROSS_COMPILER_PATH=/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-
 export SYSROOT_PATH=/sysroot
 ```
-The MAkefile will append the executable type (gcc or g++) to the cross compilation base path.
+The Makefile will append the executable type (gcc or g++) to the cross compilation base path.
